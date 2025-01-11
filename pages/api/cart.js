@@ -1,0 +1,10 @@
+import dbConnect from "@/lib/dbConnect";
+import { productModel } from "@/models/Product";
+
+export default async function handle(req, res){
+  await dbConnect()
+  const ids = req.body
+  const products = (await productModel.find({}))
+  console.log(products.filter(product => ids.includes(product._id.toString())))
+  res.send(products)
+}

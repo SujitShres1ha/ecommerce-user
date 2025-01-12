@@ -15,7 +15,7 @@ import { CartContext } from "./CartContext";
 function ProductCard({product}) {
   const {addToCart} = useContext(CartContext)
   return (
-    <Card className="w-52 h-56">
+    <Card className="md:w-52 md:h-56 h-48 w-44">
       <CardHeader className="h-2/3">
         <div className="w-full h-full">
           <img className="w-full h-full object-contain" src={product.images} alt={product.name} />

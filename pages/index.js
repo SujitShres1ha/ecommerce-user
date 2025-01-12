@@ -1,6 +1,7 @@
 import Featured from "@/components/Featured";
 import Header from "@/components/Header";
 import LatestProducts from "@/components/LatestProducts";
+import Layout from "@/components/Layout";
 import dbConnect from "@/lib/dbConnect";
 import { productModel } from "@/models/Product";
 
@@ -8,11 +9,10 @@ import { productModel } from "@/models/Product";
 export default function Home({product, latestProducts}) {
   console.log(latestProducts)
   return (
-    <main className="p-6 container mx-auto space-y-6">
-    <Header/>
-    <Featured product={product}/>
-    <LatestProducts newProducts={latestProducts}/>
-    </main>
+    <Layout>
+      <Featured product={product}/>
+      <LatestProducts newProducts={latestProducts}/>
+    </Layout>
   );
 }
 

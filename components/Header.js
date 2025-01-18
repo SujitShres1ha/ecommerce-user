@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { FiAlignJustify } from "react-icons/fi";
+import { useRouter } from "next/router";
+import { useContext, useState } from "react";
+import { CartContext } from "./CartContext";
 
 function Header() {
   const router = useRouter();
@@ -8,7 +11,6 @@ function Header() {
   return (
     <header className="bg-white text-black">
       <div className="container mx-auto flex justify-between items-center md:p-4">
-        {/* Hamburger Button for Small Screens */}
         <button
           onClick={() => setNavOpen(true)}
           aria-label="Open navigation"
@@ -17,12 +19,10 @@ function Header() {
           <FiAlignJustify className="w-6 h-6" />
         </button>
 
-        {/* Logo */}
         <div className="text-lg font-bold inline-flex w-full justify-center md:w-auto">
           <Link href="/">MyStore</Link>
         </div>
 
-        {/* Horizontal Navbar for Larger Screens */}
         <nav className="hidden md:flex space-x-6 justify-evenly">
           <Link
             href="/products"
@@ -62,7 +62,8 @@ function Header() {
                 : ""
             }`}
           >
-            Cart {cart.length > 0 && `(${cart.length})`}
+            Cart{""}
+              {cart.length > 0 && `(${cart.reduce((acc, product) => acc + product.quantity, 0)})`}
           </Link>
         </nav>
       </div>
@@ -132,8 +133,5 @@ function Header() {
     </header>
   );
 }
-import { useRouter } from "next/router";
-import { useContext, useState } from "react";
-import { CartContext } from "./CartContext";
 
 export default Header;

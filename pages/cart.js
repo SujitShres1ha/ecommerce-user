@@ -22,19 +22,20 @@ import {
 import Layout from "@/components/Layout";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 function cart() {
-  const { cart, addToCart } = useContext(CartContext);
+  const { cart, addToCart, removeFromCart } = useContext(CartContext);
   const [products, setProdcuts] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [firstAddress, setFirstAddress] = useState("");
-  const [secondAddress, setSecondAddress] = useState("")
+  const [secondAddress, setSecondAddress] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   //bring product details from db
   useEffect(() => {
-    cart.length &&
+    if (cart.length > 0) {
       axios
         .post("/api/cart", {
           ids: [...cart.map((cartProduct) => cartProduct.id)],
@@ -42,15 +43,26 @@ function cart() {
         .then((res) => {
           setProdcuts(res.data);
         });
+    } else {
+      setProdcuts([]);
+    }
   }, [cart]);
 
-  console.log(cart)
-
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-    await axios.post('/api/checkout',{name,email,firstAddress,secondAddress,city,state,productCart: cart})
-  }
+    const response = await axios.post("/api/checkout", {
+      name,
+      email,
+      firstAddress,
+      secondAddress,
+      city,
+      state,
+      productCart: cart,
+    });
+    if (response.data.url) {
+      window.location = response.data.url;
+    }
+  };
 
   return (
     <Layout>
@@ -80,37 +92,52 @@ function cart() {
                         <p>{product.name}</p>
                       </TableCell>
                       <TableCell className="text-center">
-                        <input
-                          type="number"
-                          defaultValue={ //quantity from the cart 
-                            cart.find( 
-                              (cartProduct) => cartProduct.id == product._id
-                            ).quantity
-                          }
-                          className="text-center"
-                          onChange={(e) =>
-                            addToCart(product._id, e.target.value)
-                          }
-                        />
+                        <div className="inline-flex items-center gap-3 justify-center">
+                          <input
+                            type="number"
+                            min={1}
+                            value={
+                              //quantity from the cart
+                              cart.find(
+                                (cartProduct) => cartProduct.id == product._id
+                              )?.quantity || 1
+                            }
+                            className="text-center"
+                            onChange={(e) =>
+                              addToCart(product._id, e.target.value)
+                            }
+                          />
+                          <button onClick={() => removeFromCart(product._id)}>
+                            <Trash
+                              size={15}
+                              strokeWidth={2}
+                              className="hover:fill-black"
+                            />
+                          </button>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         $
                         {product.price *
-                          cart.find(//quantity from the cart
+                          cart.find(
+                            //quantity from the cart
                             (cartProduct) => cartProduct.id == product._id
-                          ).quantity}
+                          )?.quantity}
                       </TableCell>
                     </TableRow>
                   );
                 })}
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell className="text-center font-bold text-lg">Total</TableCell>
+                <TableCell className="text-center font-bold text-lg">
+                  Total
+                </TableCell>
                 <TableCell className="text-right font-bold text-lg">
                   $
                   {cart.length > 0 &&
                     products.length > 0 &&
-                    cart?.reduce( //total price
+                    cart?.reduce(
+                      //total price
                       (acc, cartProduct) =>
                         acc +
                         cartProduct.quantity * //quantity from the product
@@ -124,18 +151,30 @@ function cart() {
             </TableBody>
           </Table>
         </div>
-        <form className="lg:w-1/3 w-full border border-gray-200 rounded-lg lg:p-5 p-10 space-y-4 h-fit"
-        onSubmit={handleSubmit}>
+        <form
+          className="lg:w-1/3 w-full border border-gray-200 rounded-lg lg:p-5 p-10 space-y-4 h-fit"
+          onSubmit={handleSubmit}
+        >
           <h1 className="text-center font-bold text-xl pb-1">
             Order Information
           </h1>
           <div className="space-y-1">
             <Label htmlFor="name">Full Name (First and Last Name)</Label>
-            <Input type="text" placeholder="" id="name" onChange={(e) => setName(e.target.value)}/>
+            <Input
+              type="text"
+              placeholder=""
+              id="name"
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="space-y-1">
             <Label htmlFor="email">Email</Label>
-            <Input type="email" placeholder="" id="email" onChange={(e) => setEmail(e.target.value)}/>
+            <Input
+              type="email"
+              placeholder=""
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div className="space-y-1">
             <Label htmlFor="address1">Address Line 1</Label>
@@ -144,23 +183,27 @@ function cart() {
               placeholder="Street address, P.O. box, company name, c/o"
               id="address1"
               className=""
-              onChange={e => setFirstAddress(e.target.value)}
+              onChange={(e) => setFirstAddress(e.target.value)}
             />
             <Input
               type="text"
               placeholder="Apartment, suite, unit, building, floor"
               id="address2"
-              onChange={e => setSecondAddress(e.target.value)}
+              onChange={(e) => setSecondAddress(e.target.value)}
             />
           </div>
           <div className="flex justify-between gap-2">
             <div className="w-[55%] space-y-1">
               <Label htmlFor="city">City</Label>
-              <Input type="text" id="city" onChange={e => setCity(e.target.value)}/>
+              <Input
+                type="text"
+                id="city"
+                onChange={(e) => setCity(e.target.value)}
+              />
             </div>
             <div className="w-[45%] space-y-1">
               <Label htmlFor="state">State</Label>
-              <Select onValueChange={value => setState(value)}>
+              <Select onValueChange={(value) => setState(value)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="Select state" />
                 </SelectTrigger>
@@ -221,7 +264,9 @@ function cart() {
             </div>
           </div>
           <div className="pt-1">
-            <Button className="w-full" type="submit">Continue to payment</Button>
+            <Button className="w-full" type="submit">
+              Continue to payment
+            </Button>
           </div>
         </form>
       </div>

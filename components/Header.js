@@ -62,8 +62,8 @@ function Header() {
                 : ""
             }`}
           >
-            Cart{""}
-              {cart.length > 0 && `(${cart.reduce((acc, product) => acc + product.quantity, 0)})`}
+            Cart
+              {cart?.length > 0 && `(${cart?.reduce((acc, product) => acc + product.quantity, 0)})`}
           </Link>
         </nav>
       </div>

@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 
 function cart() {
-  const { cart, addToCart, removeFromCart } = useContext(CartContext);
+  const { cart, addToCart, removeFromCart, setCart } = useContext(CartContext);
   const [products, setProdcuts] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,6 +33,7 @@ function cart() {
   const [secondAddress, setSecondAddress] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
+  // console.log(cart)
   //bring product details from db
   useEffect(() => {
     if (cart.length > 0) {
@@ -50,6 +51,29 @@ function cart() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const checkInventory = async (productId) => {
+      try {
+        const response = await axios.get(`api/products/?id=${productId}`);
+        if (response?.data){
+          return response?.data
+        }
+      } catch (error) {
+        console.error('Error retrieving the stock')
+      }
+    }
+
+    for (const item of cart){
+      if (item && item.id){
+        const product = await checkInventory(item.id);
+        console.log(product)
+      if (product.stock < item.quantity){
+        alert(`${product.name} out of stock.`)
+        return;
+      }
+      
+      }
+      
+    }
     const response = await axios.post("/api/checkout", {
       name,
       email,
@@ -60,6 +84,7 @@ function cart() {
       productCart: cart,
     });
     if (response.data.url) {
+      setCart([]);
       window.location = response.data.url;
     }
   };
@@ -134,7 +159,7 @@ function cart() {
                 </TableCell>
                 <TableCell className="text-right font-bold text-lg">
                   $
-                  {cart.length > 0 &&
+                  {cart?.length > 0 &&
                     products.length > 0 &&
                     cart?.reduce(
                       //total price
@@ -143,7 +168,7 @@ function cart() {
                         cartProduct.quantity * //quantity from the product
                           products?.find(
                             (product) => cartProduct.id == product._id //price from the products
-                          ).price,
+                          )?.price,
                       0
                     )}
                 </TableCell>

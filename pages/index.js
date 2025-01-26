@@ -6,24 +6,30 @@ import dbConnect from "@/lib/dbConnect";
 import { productModel } from "@/models/Product";
 
 
-export default function Home({product, latestProducts}) {
-  console.log(latestProducts)
+export default function Home({products, latestProducts}) {
+  // console.log(latestProducts)
   return (
     <Layout>
-      <Featured product={product}/>
+      <Featured products={products}/>
       <LatestProducts newProducts={latestProducts}/>
     </Layout>
   );
 }
 
 export async function getServerSideProps(){
-  const featuredProductId = '676c24258536a581690bfc15';
+  const featuredProductIds = ['676c24258536a581690bfc15','679442d978877e2ac019f502'];
   await dbConnect();
-  const featuredProduct = await productModel.findById(featuredProductId)
+  const featuredProducts = []
+  for (const id of featuredProductIds){
+    const product = await productModel.findById(id)
+    if (product) {
+      featuredProducts.push(product)
+    }
+  }
   const newProducts = await productModel.find({},null,{sort: {'_id':-1}})
   return {
     props: {
-      product: JSON.parse(JSON.stringify(featuredProduct)),
+      products: JSON.parse(JSON.stringify(featuredProducts)),
       latestProducts: JSON.parse(JSON.stringify(newProducts))
     }
 

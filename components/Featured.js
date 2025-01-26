@@ -9,13 +9,13 @@ import {
 import FeaturedCard from "./FeaturedCard";
 
 
-function Featured({product}) {
+function Featured({products}) {
   return (
     <Carousel className="">
       <CarouselContent className="">
-        <CarouselItem><FeaturedCard product={product}/></CarouselItem>
-        <CarouselItem>2</CarouselItem>
-        <CarouselItem>3</CarouselItem>
+        {products.map(product => {
+          return (<CarouselItem><FeaturedCard key={product._id} product={product}/></CarouselItem>)
+        })}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

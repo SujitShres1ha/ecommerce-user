@@ -54,25 +54,23 @@ function cart() {
     const checkInventory = async (productId) => {
       try {
         const response = await axios.get(`api/products/?id=${productId}`);
-        if (response?.data){
-          return response?.data
+        if (response?.data) {
+          return response?.data;
         }
       } catch (error) {
-        console.error('Error retrieving the stock')
+        console.error("Error retrieving the stock");
       }
-    }
+    };
 
-    for (const item of cart){
-      if (item && item.id){
+    for (const item of cart) {
+      if (item && item.id) {
         const product = await checkInventory(item.id);
-        console.log(product)
-      if (product.stock < item.quantity){
-        alert(`${product.name} out of stock.`)
-        return;
+        console.log(product);
+        if (product.stock < item.quantity) {
+          alert(`${product.name} out of stock.`);
+          return;
+        }
       }
-      
-      }
-      
     }
     const response = await axios.post("/api/checkout", {
       name,
@@ -289,9 +287,15 @@ function cart() {
             </div>
           </div>
           <div className="pt-1">
-            <Button className="w-full" type="submit">
-              Continue to payment
-            </Button>
+            {cart.length > 0 ? (
+              <Button className="w-full" type="submit">
+                Continue to payment
+              </Button>
+            ) : (
+              <Button className="w-full" disabled>
+                Continue to payment
+              </Button>
+            )}
           </div>
         </form>
       </div>

@@ -3,8 +3,7 @@ import { orderModel } from "@/models/Order";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 import { buffer } from "micro";
 
-const endpointSecret =
-  "whsec_0288b0af5f99646b3c80ec38a10d7b039d51bd6cf5f59701133578ebee82d8d9";
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_KEY;
 export default async function handler(req, res) {
   await dbConnect();
   let event = req.body;

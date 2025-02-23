@@ -25,7 +25,7 @@ function Header() {
 
         <nav className="hidden md:flex space-x-6 justify-evenly">
           <Link
-            href="/products"
+            href="/"
             className={`${
               router.pathname === "/"
                 ? "border-b-[1px] font-medium border-gray-600"
@@ -130,6 +130,7 @@ function Header() {
           </aside>
         </div>
       )}
+      <hr className="md: mx-4"/>
     </header>
   );
 }

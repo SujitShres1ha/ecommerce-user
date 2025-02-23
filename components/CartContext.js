@@ -26,7 +26,7 @@ export function CartContextProvider({ children }) {
 
   const checkInventory = async (productId) => {
     try {
-      const response = await axios.get(`api/products/?id=${productId}`);
+      const response = await axios.get(`/api/products/?id=${productId}`);
       if (response?.data){
         return response?.data?.stock
       }
@@ -40,6 +40,7 @@ export function CartContextProvider({ children }) {
     const parsedValue = parseInt(value)
     console.log(parsedValue)
     const stock = await checkInventory(productId) //check stock from db
+    console.log(stock)
     let demand;
     if (!parsedValue){
       demand = cart?.find(product => product.id === productId)?.quantity || 0

@@ -4,9 +4,10 @@ import { productModel } from '@/models/Product';
 export default async function handle(req, res) {
   if (req.method === 'GET') {
     try {
+      console.log(req.method)
       await dbConnect();
       const id = req.query.id;
-      console.log(req.query.id);
+      console.log(id);
 
       const response = await productModel.findById(id);
 
